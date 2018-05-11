@@ -1,0 +1,3 @@
+[submodule "3rd/ssl-proto"]
+	path = 3rd/ssl-proto
+	url = https://github.com/Cocoas-Lab/proto.git
