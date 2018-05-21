@@ -1,0 +1,21 @@
+box: cocoas-lab-invironment
+
+build:
+  steps:
+    - script:
+      name: create build directory
+      code: |
+        mkdir -p build
+
+    - script:
+      name: init git submodule
+      code: |
+        git submodule upgrade --init --recursive
+
+    - script:
+      name: build
+      code: |
+        cd build
+        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
+        ninja-build -v
+
