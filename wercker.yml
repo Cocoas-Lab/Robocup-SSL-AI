@@ -17,5 +17,4 @@ build:
       code: |
         cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
-        ninja-build -v
-
+        ninja -v
