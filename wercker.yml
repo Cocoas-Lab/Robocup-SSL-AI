@@ -10,7 +10,7 @@ build:
     - script:
       name: init git submodule
       code: |
-        git submodule upgrade --init --recursive
+        git submodule update --init --recursive
 
     - script:
       name: build
