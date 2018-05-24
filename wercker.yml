@@ -18,3 +18,9 @@ build:
         cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
         ninja -v
+
+    - script:
+      name: unit test
+      code: |
+        cd build
+        ctest --output-on-failure
