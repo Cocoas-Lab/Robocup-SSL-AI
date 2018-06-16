@@ -24,3 +24,8 @@ build:
       code: |
         cd build
         ctest --output-on-failure
+
+  after-steps:
+    - slack-notifier:
+      url: $SLACK_WEBHOOK
+      notify_on: failed
