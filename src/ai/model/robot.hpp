@@ -18,6 +18,7 @@ namespace ai{
 
 		public:
 			robot();
+			robot(uint32_t _id);
 			robot(uint32_t _id, double _x, double _y);
 			robot(const robot&) = default;
 
