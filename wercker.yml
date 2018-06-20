@@ -29,3 +29,9 @@ build:
     - slack-notifier:
       url: $SLACK_WEBHOOK
       notify_on: failed
+
+static-validations:
+  steps:
+    - script:
+      name: format
+      code: ./tools/validate/format.sh
