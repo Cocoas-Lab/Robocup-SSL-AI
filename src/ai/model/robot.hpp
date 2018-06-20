@@ -31,7 +31,6 @@ namespace ai{
 			double theta();
 			double omega();
 
-			void id(uint32_t _id);
 			void x(double _x);
 			void y(double _y);
 			void vx(double _vx);

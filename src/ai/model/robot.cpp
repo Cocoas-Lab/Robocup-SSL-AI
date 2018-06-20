@@ -42,10 +42,6 @@ namespace ai{
 			return omega_;
 		}
 
-		void robot::id(uint32_t _id){
-			id_ = _id;
-		}
-
 		void robot::x(double _x){
 			x_ = _x;
 		}
