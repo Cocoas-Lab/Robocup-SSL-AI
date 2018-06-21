@@ -20,6 +20,6 @@ static constexpr auto isDurationValue = isDuration<T>::value;
 
 } // namespace decision
 } // namespace util
-} // namespace ai_server
+} // namespace ai
 
 #endif // AI_SERVER_UTIL_DETAIL_TIME_H
