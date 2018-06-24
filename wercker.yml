@@ -18,3 +18,20 @@ build:
         cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZERS=ON
         ninja -v
+
+    - script:
+      name: unit test
+      code: |
+        cd build
+        ctest --output-on-failure
+
+  after-steps:
+    - slack-notifier:
+      url: $SLACK_WEBHOOK
+      notify_on: failed
+
+static-validations:
+  steps:
+    - script:
+      name: format
+      code: ./tools/validate/format.sh

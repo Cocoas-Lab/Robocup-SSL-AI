@@ -53,5 +53,8 @@ find_package(Eigen3 3.3 REQUIRED)
 find_package(Protobuf 3.2 REQUIRED)
 find_package(Threads REQUIRED)
 
+enable_testing()
+
 add_subdirectory(3rd)
 add_subdirectory(src)
+add_subdirectory(test)
