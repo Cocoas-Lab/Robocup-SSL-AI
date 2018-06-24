@@ -1,8 +1,16 @@
 #include "teamInfo.hpp"
 
-namespace ai{
-	namespace model{
-		teamInfo::teamInfo(const std::string& _name):name_(_name), score_(0), goalie_(0), redCards_(0), yellowCards_(0), yellowCardTimes_(0), timeouts_(0), timeoutTimes_(0){}
+namespace ai {
+namespace model {
+teamInfo::teamInfo(const std::string& _name)
+    : name_(_name),
+      score_(0),
+      goalie_(0),
+      redCards_(0),
+      yellowCards_(0),
+      yellowCardTimes_(0),
+      timeouts_(0),
+      timeoutTimes_(0) {}
 
 const std::string& teamInfo::name() const {
   return name_;
@@ -63,5 +71,5 @@ void teamInfo::timeouts(uint32_t _timeouts) {
 void teamInfo::timeoutTimes(uint32_t _timeoutTimes) {
   timeoutTimes_ = _timeoutTimes;
 }
-	}
-}
+} // namespace model
+} // namespace ai
