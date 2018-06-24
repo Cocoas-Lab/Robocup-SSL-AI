@@ -7,10 +7,10 @@
 BOOST_AUTO_TEST_SUITE(teamColor)
 
 BOOST_AUTO_TEST_CASE(test001) {
-	ai::model::teamColor color;
+  ai::model::teamColor color;
 
-	color = ai::model::teamColor::Blue;
-	BOOST_TEST(color == ai::model::teamColor::Blue);
+  color = ai::model::teamColor::Blue;
+  BOOST_TEST(color == ai::model::teamColor::Blue);
 }
 
 BOOST_AUTO_TEST_SUITE_END();
