@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 
-namespace ai{
-namespace model{
-class field{
+namespace ai {
+namespace model {
+class field {
 private:
   uint32_t length_;
   uint32_t width_;
@@ -36,7 +36,7 @@ public:
   double yMax() const;
   double yMin() const;
 };
-}
-}
+} // namespace model
+} // namespace ai
 
 #endif
