@@ -42,9 +42,6 @@ BOOST_AUTO_TEST_CASE(test002) {
   BOOST_TEST(field.xMin() = -150);
   BOOST_TEST(field.yMax() = 250);
   BOOST_TEST(field.yMin() = -250);
-
 }
-
-
 
 BOOST_AUTO_TEST_SUITE_END()
