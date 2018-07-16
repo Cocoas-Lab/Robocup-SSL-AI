@@ -45,4 +45,4 @@ void command::accel(const command::acceleration& _accel) {
   setpoint_ = _accel;
 }
 } // namespace model
-} // namespace ai_server
+} // namespace ai

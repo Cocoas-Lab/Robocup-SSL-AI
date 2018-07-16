@@ -30,7 +30,7 @@ public:
     double alpha;
   };
 
-  using Setpoint  = std::variant<position, velocity, acceleration>;
+  using Setpoint = std::variant<position, velocity, acceleration>;
   using KickFlag = std::tuple<kickType, double>;
 
   explicit command(uint32_t _id);
@@ -44,7 +44,7 @@ public:
   void kick(const KickFlag& _kick);
   void pos(const position& _position);
   void vel(const velocity& _velocity);
-	void accel(const acceleration& _accel);
+  void accel(const acceleration& _accel);
 
 private:
   uint32_t id_;
@@ -53,6 +53,6 @@ private:
   Setpoint setpoint_;
 };
 } // namespace model
-} // namespace ai_server
+} // namespace ai
 
 #endif
