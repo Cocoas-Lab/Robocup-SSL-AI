@@ -47,7 +47,7 @@ public:
   /// @param _lastValueFunc  最新の値を取得する関数オブジェクト
   /// @param _writerFunc      対象の値を更新する関数オブジェクト
   base(LastValueFuncType _lastValueFunc, WriterFuncType _writerFunc)
-      : lastValueFunc_(_lastValueFunc), WriterFunc_(_writerFunc) {}
+      : lastValueFunc_(_lastValueFunc), writerFunc_(_writerFunc) {}
 
   virtual ~base() = default;
 
@@ -82,7 +82,7 @@ private:
   /// 最新の値を取得する関数オブジェクト
   LastValueFuncType lastValueFunc_;
   /// 対象の値を更新する関数オブジェクト
-  writerFuncType writerFunc_;
+  WriterFuncType writerFunc_;
 };
 
 } // namespace filter
