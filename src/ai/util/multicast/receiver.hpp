@@ -12,6 +12,7 @@ namespace ai {
 namespace util {
 namespace multicast {
 class receiver {
+public:
   static constexpr std::size_t bufferSize = 8192;
 
   using Buffer        = std::array<uint8_t, bufferSize>;
@@ -19,6 +20,7 @@ class receiver {
   using ErrorSignal   = boost::signals2::signal<void(const boost::system::error_code&)>;
   using UDP           = boost::asio::ip::udp;
 
+private:
   UDP::socket socket;
   UDP::endpoint endPoint;
   ReceiveSignal received;
