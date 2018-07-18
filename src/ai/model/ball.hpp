@@ -16,12 +16,12 @@ public:
   ball(double _x, double _y);
   ball(const ball&) = default;
 
-  double x();
-  double y();
-  double vx();
-  double vy();
-  double ax();
-  double ay();
+  double x() const;
+  double y() const;
+  double vx() const;
+  double vy() const;
+  double ax() const;
+  double ay() const;
 
   void x(double _x);
   void y(double _y);
