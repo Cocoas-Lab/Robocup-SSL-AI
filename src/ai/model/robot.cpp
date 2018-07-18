@@ -8,39 +8,39 @@ robot::robot(uint32_t _id) : id_(_id), x_(0), y_(0), theta_(0) {}
 
 robot::robot(uint32_t _id, double _x, double _y) : id_(_id), x_(_x), y_(_y), theta_(0) {}
 
-uint32_t robot::id() {
+uint32_t robot::id() const {
   return id_;
 }
 
-double robot::x() {
+double robot::x() const {
   return x_;
 }
 
-double robot::y() {
+double robot::y() const {
   return y_;
 }
 
-double robot::vx() {
+double robot::vx() const {
   return vx_;
 }
 
-double robot::vy() {
+double robot::vy() const {
   return vy_;
 }
 
-double robot::ax() {
+double robot::ax() const {
   return ax_;
 }
 
-double robot::ay() {
+double robot::ay() const {
   return ay_;
 }
 
-double robot::theta() {
+double robot::theta() const {
   return theta_;
 }
 
-double robot::omega() {
+double robot::omega() const {
   return omega_;
 }
 

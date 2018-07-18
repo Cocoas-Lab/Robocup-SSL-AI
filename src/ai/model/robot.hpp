@@ -22,15 +22,15 @@ public:
   robot(uint32_t _id, double _x, double _y);
   robot(const robot&) = default;
 
-  uint32_t id();
-  double x();
-  double y();
-  double vx();
-  double vy();
-  double ax();
-  double ay();
-  double theta();
-  double omega();
+  uint32_t id() const;
+  double x() const;
+  double y() const;
+  double vx() const;
+  double vy() const;
+  double ax() const;
+  double ay() const;
+  double theta() const;
+  double omega() const;
 
   void x(double _x);
   void y(double _y);

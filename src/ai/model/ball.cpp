@@ -6,27 +6,27 @@ ball::ball() : x_(0), y_(0) {}
 
 ball::ball(double _x, double _y) : x_(_x), y_(_y) {}
 
-double ball::x() {
+double ball::x() const {
   return x_;
 }
 
-double ball::y() {
+double ball::y() const {
   return y_;
 }
 
-double ball::vx() {
+double ball::vx() const {
   return vx_;
 }
 
-double ball::vy() {
+double ball::vy() const {
   return vy_;
 }
 
-double ball::ax() {
+double ball::ax() const {
   return ax_;
 }
 
-double ball::ay() {
+double ball::ay() const {
   return ay_;
 }
 
