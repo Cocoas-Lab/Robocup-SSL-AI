@@ -6,7 +6,8 @@ robot::robot() : id_(0), x_(0), y_(0), theta_(0) {}
 
 robot::robot(uint32_t _id) : id_(_id), x_(0), y_(0), theta_(0) {}
 
-robot::robot(uint32_t _id, double _x, double _y) : id_(_id), x_(_x), y_(_y), theta_(0) {}
+robot::robot(uint32_t _id, double _x, double _y, double _theta)
+    : id_(_id), x_(_x), y_(_y), theta_(_theta) {}
 
 uint32_t robot::id() const {
   return id_;
