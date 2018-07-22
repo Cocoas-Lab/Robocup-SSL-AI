@@ -7,13 +7,13 @@ BOOST_AUTO_TEST_SUITE(robot)
 
 BOOST_AUTO_TEST_CASE(test001) {
   // constructor test
-  ai::model::robot robot(1, 2.0, 3.0);
+  ai::model::robot robot(1, 2.0, 3.0, 4.0);
 
   // get value test
   BOOST_TEST(robot.id() == 1);
   BOOST_TEST(robot.x() == 2.0);
   BOOST_TEST(robot.y() == 3.0);
-  BOOST_TEST(robot.theta() == 0.0);
+  BOOST_TEST(robot.theta() == 4.0);
 
   // set value test
   robot.x(10.0);
