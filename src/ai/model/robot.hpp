@@ -17,9 +17,7 @@ class robot {
   double omega_;
 
 public:
-  robot();
-  robot(uint32_t _id);
-  robot(uint32_t _id, double _x, double _y);
+  robot(uint32_t _id = 0, double _x = 0, double _y = 0, double _theta = 0);
   robot(const robot&) = default;
 
   uint32_t id() const;
