@@ -1,5 +1,5 @@
-#ifndef AI_SERVER_CONTROLLER_BASE_H
-#define AI_SERVER_CONTROLLER_BASE_H
+#ifndef AI_CONTROLLER_BASE_HPP_
+#define AI_CONTROLLER_BASE_HPP_
 
 #include <boost/variant.hpp>
 
