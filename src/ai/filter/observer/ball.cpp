@@ -33,20 +33,6 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   auto passedTime = std::chrono::duration<double>(_time - prevTime_).count();
   prevTime_ = _time;
 
-  // 状態変数行列から位置を取り出すやつ
-  auto toPos = [](const Eigen::Matrix<double, 2, 1>& _xHat) {
-    Eigen::Matrix<double, 1, 2> C;
-    C << 1, 0;
-    return C * _xHat;
-  };
-
-  // 状態変数行列から速度を取り出すやつ
-  auto toVel = [](const Eigen::Matrix<double, 2, 1>& _xHat) {
-    Eigen::Matrix<double, 1, 2> C;
-    C << 0, 1;
-    return C * _xHat;
-  };
-
   auto h1 = [](double _fric) { return -2 * lambdaObserver_ - (_fric + airRegistance_); };
 
   auto h2 = [h1](double _fric) {
@@ -77,8 +63,8 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   auto ball = _ball;
   if (_ball.x() == std::numeric_limits<uint32_t>::max() &&
       _ball.y() == std::numeric_limits<uint32_t>::max()) {
-    ball.x(toPos(xHat_[0]));
-    ball.y(toPos(xHat_[1]));
+    ball.x(xHat_[0](0));
+    ball.y(xHat_[1](0));
   }
 
   // 状態観測器の状態方程式は一般に
@@ -87,8 +73,8 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   xHatDot = (A - h * C) * xHat_[0] + h * std::floor(ball.x() / quantLimitX_) * quantLimitX_;
   xHatDot *= passedTime;
   xHat_[0] += xHatDot;
-  ball_.x(toPos(xHat_[0]));
-  ball_.vx(toVel(xHat_[0]));
+  ball_.x(xHat_[0](0));
+  ball_.vx(xHat_[0](1));
 
   // y軸方向についても同様に状態推定
   auto sinTheta = std::sin(theta);
@@ -108,8 +94,8 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   xHatDot = (A - h * C) * xHat_[1] + h * std::floor(ball.y() / quantLimitY_) * quantLimitY_;
   xHatDot *= passedTime;
   xHat_[1] += xHatDot;
-  ball_.y(toPos(xHat_[1]));
-  ball_.vy(toVel(xHat_[1]));
+  ball_.y(xHat_[1](0));
+  ball_.vy(xHat_[1](1));
 
   return ball_;
 }
