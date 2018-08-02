@@ -1,5 +1,6 @@
 #include "ball.hpp"
 #include <cmath>
+#include <limits>
 
 namespace ai {
 namespace filter {
@@ -73,12 +74,19 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
     h << h1(fricCoef_), h2(fricCoef_);
   }
 
+  // ロストを検出する機構がないので、座標が最大値かどうかで検出を行う
+  auto ball = _ball;
+  if (_ball.x() == std::numeric_limits<uint32_t>::max() &&
+      _ball.y() == std::numeric_limits<uint32_t>::max()) {
+    ball.x(toPos(xHat_[0]));
+    ball.y(toPos(xHat_[1]));
+  }
+
   // 状態観測器の状態方程式は一般に
   // x_hat_dot = (A - hC) * x_hat_ + h * y
-
   Eigen::Matrix<double, 2, 1> xHatDot;
   xHatDot = (A - h * C) * xHat_[0] +
-            h * static_cast<uint32_t>(_ball.x() / quantLimitX_) * quantLimitX_;
+            h * static_cast<uint32_t>(ball.x() / quantLimitX_) * quantLimitX_;
   xHatDot *= passedTime;
   xHat_[0] += xHatDot;
   ball_.x(toPos(xHat_[0]));
@@ -100,7 +108,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   }
 
   xHatDot = (A - h * C) * xHat_[1] +
-            h * static_cast<uint32_t>(_ball.y() / quantLimitY_) * quantLimitY_;
+            h * static_cast<uint32_t>(ball.y() / quantLimitY_) * quantLimitY_;
   xHatDot *= passedTime;
   xHat_[1] += xHatDot;
   ball_.y(toPos(xHat_[1]));
