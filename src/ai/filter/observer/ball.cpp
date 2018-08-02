@@ -1,6 +1,7 @@
 #include "ball.hpp"
 #include <cmath>
 #include <limits>
+#include <iostream>
 
 namespace ai {
 namespace filter {
@@ -17,8 +18,8 @@ constexpr double ball::lambdaObserver_;
 
 ball::ball(const model::ball& _ball, util::TimePointType _time)
     : ball_(_ball), prevTime_(_time) {
-  xHat_[0] << static_cast<uint32_t>(_ball.x() / quantLimitX_) * quantLimitX_, 0;
-  xHat_[1] << static_cast<uint32_t>(_ball.y() / quantLimitY_) * quantLimitY_, 0;
+  xHat_[0] << std::floor(_ball.x() / quantLimitX_) * quantLimitX_, 0;
+  xHat_[1] << std::floor(_ball.y() / quantLimitY_) * quantLimitY_, 0;
   ball_.vx(0);
   ball_.vy(0);
 }
@@ -29,9 +30,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   Eigen::Matrix<double, 2, 1> h;
 
   // 前回呼び出しからの経過時刻[s]
-  auto passedTime =
-      (double)std::chrono::duration_cast<std::chrono::milliseconds>(_time - prevTime_).count() /
-      1000;
+  auto passedTime = std::chrono::duration<double>(_time - prevTime_).count();
   prevTime_ = _time;
 
   // 状態変数行列から位置を取り出すやつ
@@ -54,7 +53,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
     return std::pow(lambdaObserver_, 2) - h1(_fric) * (_fric + airRegistance_);
   };
 
-  auto theta = std::atan(ball_.vx() / ball_.vy());
+  auto theta = std::atan2(ball_.vx(),  ball_.vy());
 
   // x軸方向について状態推定
   auto cosTheta = std::cos(theta);
@@ -85,8 +84,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
   // 状態観測器の状態方程式は一般に
   // x_hat_dot = (A - hC) * x_hat_ + h * y
   Eigen::Matrix<double, 2, 1> xHatDot;
-  xHatDot = (A - h * C) * xHat_[0] +
-            h * static_cast<uint32_t>(ball.x() / quantLimitX_) * quantLimitX_;
+  xHatDot = (A - h * C) * xHat_[0] + h * std::floor(ball.x() / quantLimitX_) * quantLimitX_;
   xHatDot *= passedTime;
   xHat_[0] += xHatDot;
   ball_.x(toPos(xHat_[0]));
@@ -107,8 +105,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
     h << h1(fricCoef_), h2(fricCoef_);
   }
 
-  xHatDot = (A - h * C) * xHat_[1] +
-            h * static_cast<uint32_t>(ball.y() / quantLimitY_) * quantLimitY_;
+  xHatDot = (A - h * C) * xHat_[1] + h * std::floor(ball.y() / quantLimitY_) * quantLimitY_;
   xHatDot *= passedTime;
   xHat_[1] += xHatDot;
   ball_.y(toPos(xHat_[1]));
