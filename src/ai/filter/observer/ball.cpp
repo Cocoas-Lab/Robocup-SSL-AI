@@ -31,7 +31,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
 
   // 前回呼び出しからの経過時刻[s]
   auto passedTime = std::chrono::duration<double>(_time - prevTime_).count();
-  prevTime_ = _time;
+  prevTime_       = _time;
 
   auto h1 = [](double _fric) { return -2 * lambdaObserver_ - (_fric + airRegistance_); };
 
@@ -39,7 +39,7 @@ model::ball ball::update(const model::ball& _ball, util::TimePointType _time) {
     return std::pow(lambdaObserver_, 2) - h1(_fric) * (_fric + airRegistance_);
   };
 
-  auto theta = std::atan2(ball_.vx(),  ball_.vy());
+  auto theta = std::atan2(ball_.vx(), ball_.vy());
 
   // x軸方向について状態推定
   auto cosTheta = std::cos(theta);
