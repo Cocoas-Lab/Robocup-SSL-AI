@@ -2,6 +2,7 @@
 
 namespace ai {
 namespace controller {
+base::base() : velocityLimit_(std::numeric_limits<double>::max()) {}
 base::base(const double _limit) : velocityLimit_(_limit), stable_(false) {}
 
 velocity base::operator()(const model::robot& _robot, const position& _setpoint) {
