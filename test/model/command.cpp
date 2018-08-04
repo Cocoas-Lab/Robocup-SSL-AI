@@ -44,12 +44,6 @@ BOOST_AUTO_TEST_CASE(test002) {
   BOOST_TEST(testVelocity.vx == 6.0);
   BOOST_TEST(testVelocity.vy == 7.0);
   BOOST_TEST(testVelocity.omega == 8.0);
-  ai::model::command::acceleration acceleration{9.0, 10.0, 11.0};
-  command.accel(acceleration);
-  const auto& testAcceleration = std::get<ai::model::command::acceleration>(command.setpoint());
-  BOOST_TEST(testAcceleration.ax == 9.0);
-  BOOST_TEST(testAcceleration.ay == 10.0);
-  BOOST_TEST(testAcceleration.alpha == 11.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

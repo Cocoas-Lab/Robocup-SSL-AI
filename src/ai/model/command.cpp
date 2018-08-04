@@ -41,8 +41,5 @@ void command::vel(const command::velocity& _velocity) {
   setpoint_ = _velocity;
 }
 
-void command::accel(const command::acceleration& _accel) {
-  setpoint_ = _accel;
-}
 } // namespace model
 } // namespace ai
