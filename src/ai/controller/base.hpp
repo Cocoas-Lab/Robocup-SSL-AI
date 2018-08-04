@@ -14,6 +14,7 @@ using velocity = model::command::velocity;
 
 class base : public boost::static_visitor<velocity> {
 public:
+  base();
   base(const double _limit);
   virtual ~base() = default;
 
