@@ -1,0 +1,211 @@
+diff --git a/src/main.cpp b/src/main.cpp
+index 742d5b3..b1c12ea 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -1 +1,205 @@
+-auto main() -> int {}
++#include <iostream>
++#include <atomic>
++#include <chrono>
++#include <functional>
++#include <vector>
++#include <algorithm>
++#include <mutex>
++#include <thread>
++
++#include <boost/asio.hpp>
++#include <boost/format.hpp>
++#include <boost/math/constants/constants.hpp>
++
++#include "ai/driver.hpp"
++#include "ai/model/world.hpp"
++#include "ai/model/updater/world.hpp"
++#include "ai/model/updater/refbox.hpp"
++#include "ai/receiver/refbox.hpp"
++#include "ai/receiver/vision.hpp"
++#include "ai/sender/grsim.hpp"
++#include "ai/game/action/move.hpp"
++#include "ai/filter/va.hpp"
++#include "ai/filter/observer/ball.hpp"
++#include "ai/controller/pid.hpp"
++
++using namespace std::chrono_literals;
++using namespace std::string_literals;
++
++namespace observer   = ai::filter::observer;
++namespace controller = ai::controller;
++namespace filter     = ai::filter;
++namespace game       = ai::game;
++namespace model      = ai::model;
++namespace receiver   = ai::receiver;
++namespace sender     = ai::sender;
++namespace util       = ai::util;
++
++// Visionの設定
++static constexpr char visionAddress[] = "224.5.23.2";
++static constexpr short visionPort     = 10006;
++
++// Refboxの設定
++static constexpr char globalRefboxAddress[] = "224.5.23.1";
++static constexpr short globalRefboxPort     = 10003;
++static constexpr char localRefboxAddress[]  = "224.5.23.8";
++static constexpr short localRefboxPort      = 10088;
++
++// Senderの設定
++static constexpr bool isGrsim           = true;
++static constexpr char grsimAddress[]    = "127.0.0.1";
++static constexpr short grsimCommandPort = 20011;
++
++// 周期の設定i
++using fps60 = std::chrono::duration<util::TimePointType::rep, std::ratio<1, 60>>;
++static constexpr auto cycle = std::chrono::duration_cast<util::DurationType>(fps60{1});
++
++auto main() -> int {
++  boost::asio::io_service receiverIo{};
++
++  // Receiver, Driverなどを回すスレッド
++  std::thread ioThread{};
++
++  std::shared_timed_mutex mutex;
++  std::atomic<bool> running = false;
++  std::thread gameThread{};
++  model::teamColor teamColor(model::teamColor::Yellow);
++
++  std::vector<uint32_t> activeRobots({0u});
++
++  try {
++    std::cout << boost::format("cycle: %1%") % std::chrono::duration<double>(cycle).count()
++              << std::endl;
++
++    model::updater::world updaterWorld{};
++
++    // 速度・加速度計算機
++    updaterWorld.robotsBlueUpdater().setDefaultFilter<filter::va<model::robot>>();
++    updaterWorld.robotsYellowUpdater().setDefaultFilter<filter::va<model::robot>>();
++
++    // ボールの状態オブザーバを使う
++    updaterWorld.ballUpdater().setFilter<filter::observer::ball>(model::ball{},
++                                                                 util::ClockType::now());
++
++    // Vision receiverの設定
++    std::atomic<bool> visionReceived{false};
++    receiver::vision vision{receiverIo, "0.0.0.0", visionAddress, visionPort};
++    vision.onReceive([&updaterWorld, &visionReceived](auto&& p) {
++      if (!visionReceived) {
++        // 最初に受信したときにメッセージを表示する
++        std::cout << "vision packet received!" << std::endl;
++        visionReceived = true;
++      }
++      updaterWorld.update(std::forward<decltype(p)>(p));
++    });
++
++    // Refbox receiverの設定
++    std::atomic<bool> refboxReceived{false};
++    model::updater::refbox updaterRefbox{};
++    receiver::refbox refboxReceiver{receiverIo, "0.0.0.0", globalRefboxAddress,
++                                    globalRefboxPort};
++    refboxReceiver.onReceive([&updaterRefbox, &refboxReceived](auto&& p) {
++      if (!refboxReceived) {
++        // 最初に受信したときにメッセージを表示する
++        std::cout << "refbox (global) packet received!" << std::endl;
++        refboxReceived = true;
++      }
++
++      updaterRefbox.update(std::forward<decltype(p)>(p));
++    });
++
++    // receiver_ioに登録されたタスクを別スレッドで開始
++    ioThread = std::thread{[&receiverIo] {
++      try {
++        receiverIo.run();
++      } catch (std::exception& e) {
++        std::cout << e.what() << std::endl;
++      }
++    }};
++
++    // Senderの設定
++    std::shared_ptr<sender::base> sender{};
++    sender = std::make_shared<sender::grsim>(receiverIo, grsimAddress, grsimCommandPort);
++    std::cout << boost::format("sender: grSim (%1%:%2%)") % grsimAddress % grsimCommandPort
++              << std::endl;
++
++    // Visionから値を受信するまで待つ
++    do {
++      std::this_thread::sleep_for(500ms);
++    } while (!visionReceived);
++    // 状態オブザーバなどの値が収束するまで待つ
++    std::this_thread::sleep_for(1s);
++
++    /// driverの設定
++    std::thread driverThread{};
++    boost::asio::io_service driverIo;
++    ai::driver driver(driverIo, cycle, updaterWorld, teamColor);
++    driverThread = std::thread([&driverIo] {
++      try {
++        driverIo.run();
++      } catch (const std::exception& e) {
++        std::cout << "exception at driver thread" << std::endl << e.what() << std::endl;
++      } catch (...) {
++        std::cout << "unknown exception at driver_thread" << std::endl;
++      }
++    });
++
++    for (auto id : activeRobots) {
++      constexpr auto cycleCount = std::chrono::duration<double>(cycle).count();
++      auto controller           = std::make_unique<controller::pid>(cycleCount);
++      driver.registerRobot(id, std::move(controller), sender);
++    }
++
++    model::refbox refbox;
++    std::atomic<bool> flag{false};
++    running = true;
++    ai::util::TimePointType prevTime{};
++    while (running) {
++      const auto currentTime = util::ClockType::now();
++      if (currentTime - prevTime < cycle) {
++        // std::this_thread::yield();
++        std::this_thread::sleep_for(1ms);
++      } else {
++        std::unique_lock<std::shared_timed_mutex> lock(mutex);
++
++        const auto prevCmd = refbox.command();
++
++        const auto world = updaterWorld.value();
++        refbox           = updaterRefbox.value();
++
++        const auto currentCmd  = refbox.command();
++        const auto penaltyKick = teamColor == model::teamColor::Yellow
++                                     ? model::refbox::gameCommand::PreparePenaltyYellow
++                                     : model::refbox::gameCommand::PreparePenaltyBlue;
++
++        // stopgameとpenalty_kickでは速度を落として安定制御
++        if (currentCmd != prevCmd) {
++          if (currentCmd == model::refbox::gameCommand::Stop ||
++              /*current_cmd == model::refbox::game_command::ball_placement_yellow ||
++              current_cmd == model::refbox::game_command::ball_placement_blue ||*/
++              (prevCmd == penaltyKick &&
++               currentCmd == model::refbox::gameCommand::NormalStart) ||
++              currentCmd == model::refbox::gameCommand::PreparePenaltyYellow ||
++              currentCmd == model::refbox::gameCommand::PreparePenaltyBlue) {
++            driver.velocityLimit(500);
++          } else if (currentCmd == model::refbox::gameCommand::BallPlacementYellow ||
++                     currentCmd == model::refbox::gameCommand::BallPlacementBlue) {
++            driver.velocityLimit(1000);
++          } else {
++            driver.velocityLimit(std::numeric_limits<double>::max());
++          }
++        }
++
++        const auto visibleRobots =
++            static_cast<bool>(teamColor) ? world.robotsYellow() : world.robotsBlue();
++
++        prevTime = currentTime;
++      }
++    }
++
++    receiverIo.stop();
++    ioThread.join();
++  } catch (std::exception& e) {
++    std::cout << "exception" << std::endl << e.what() << std::endl;
++  }
++}
