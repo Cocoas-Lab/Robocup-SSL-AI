@@ -63,7 +63,7 @@ double field::xMax() const {
 }
 
 double field::xMin() const {
-  return -(length_ / 2);
+  return (-(int32_t)length_ / 2);
 }
 
 double field::yMax() const {
@@ -71,7 +71,7 @@ double field::yMax() const {
 }
 
 double field::yMin() const {
-  return -(width_ / 2);
+  return (-(int32_t)width_ / 2);
 }
 } // namespace model
 } // namespace ai

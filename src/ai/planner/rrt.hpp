@@ -44,7 +44,7 @@ public:
   /// @param : _searchNum  探索を行う回数
   /// @param : _maxBranchLength 伸ばす枝の最大距離
   /// @param : _margin  避けるときのマージン
-  void search(const position _start, const position _goal, const uint32_t _searchNum = 30,
+  void search(const position _start, const position _goal, const uint32_t _searchNum = 100,
               const double _maxBranchLength = 300.0, const double _margin = 150.0);
 
 private:

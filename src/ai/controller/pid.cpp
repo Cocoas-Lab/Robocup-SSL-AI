@@ -53,18 +53,16 @@ velocity pid::update(const model::robot& _robot, const position& _setpoint) {
 
   double speed     = std::hypot(ep.x, ep.y);
   double direction = util::math::wrapToPi(std::atan2(ep.y, ep.x) - robot_.theta());
-  e_[0].vx         = speed * std::cos(direction);
-  e_[0].vy         = speed * std::sin(direction);
-  e_[0].omega      = ep.theta;
 
   // 計算用にゲイン再計算
   auto kp = model::command::velocity{kp_[0], kp_[0], kp_[1]};
   auto ki = model::command::velocity{ki_[0], ki_[0], ki_[1]};
   auto kd = model::command::velocity{kd_[0], kd_[0], kd_[1]};
 
-  // 双一次変換
-  // s=(2/T)*(Z-1)/(Z+1)としてPIDcontrollerを離散化
-  // C=Kp+Ki/s+Kds
+  e_[0].vx    = speed * std::cos(direction);
+  e_[0].vy    = speed * std::sin(direction);
+  e_[0].omega = ep.theta;
+
   up_[0] = kp * e_[0];
   ui_[0] = cycle_ * ki * (e_[0] + e_[1]) / 2 + ui_[1];
   ud_[0] = 2 * kd * (e_[0] - e_[1]) / cycle_ - ud_[1];
