@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <variant>
-#include <boost/format.hpp>
-
 #include "driver.hpp"
 
 namespace ai {
