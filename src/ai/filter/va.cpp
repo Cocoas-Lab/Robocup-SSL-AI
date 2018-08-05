@@ -13,7 +13,7 @@ namespace filter {
 
 template <>
 model::robot va<model::robot>::va::update(const model::robot& _value,
-                                                                util::TimePointType _time) {
+                                          util::TimePointType _time) {
   auto result = _value;
 
   if (prevTime_ == TimePointType::min()) {
@@ -59,4 +59,4 @@ model::robot va<model::robot>::va::update(const model::robot& _value,
 }
 
 } // namespace filter
-} // namespace ai_server
+} // namespace ai

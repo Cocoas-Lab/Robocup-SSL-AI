@@ -10,7 +10,7 @@ namespace filter {
 
 template <class T>
 class va : public base<T, timing::OnUpdated> {
-  using ValueType      = T;
+  using ValueType     = T;
   using TimePointType = util::TimePointType;
 
 public:
@@ -27,7 +27,6 @@ template <class T>
 va<T>::va() : prevTime_(TimePointType::min()) {}
 
 } // namespace filter
-} // namespace ai_server
+} // namespace ai
 
 #endif // AI_SERVER_FILTER_VA_CALCULATOR_H
-

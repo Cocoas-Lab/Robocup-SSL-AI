@@ -24,6 +24,6 @@ private:
 };
 } // namespace action
 } // namespace game
-} // namespace ai_server
+} // namespace ai
 
 #endif

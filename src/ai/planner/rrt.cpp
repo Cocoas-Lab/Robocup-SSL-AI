@@ -76,7 +76,6 @@ void rrt::search(const position _start, const position _goal, const uint32_t _se
   position minPos = {world_.field().xMin(), world_.field().yMin(), 0};
   position maxPos = {world_.field().xMax(), world_.field().yMax(), 0};
 
-
   bool inAvoidRange = false;
   for (auto&& it : allObstacles_) {
     if (std::hypot(_start.x - it.position_.x, _start.y - it.position_.y) < it.r_) {

@@ -32,9 +32,9 @@ public:
 protected:
   const model::world& world_;
   bool isYellow_;
-	bool finished_;
+  bool finished_;
   uint32_t id_;
-	std::shared_ptr<planner::rrt> rrt_;
+  std::shared_ptr<planner::rrt> rrt_;
 };
 
 } // namespace action
