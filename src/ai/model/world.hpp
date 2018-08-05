@@ -26,8 +26,8 @@ public:
   world& operator=(const world& _others);
   world& operator=(world&& _others);
 
+	model::field field()const;
   model::ball ball() const;
-  model::field field() const;
   RobotsList robotsBlue() const;
   RobotsList robotsYellow() const;
 
