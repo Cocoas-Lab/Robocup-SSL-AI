@@ -98,7 +98,6 @@ model::command getBall::execute() {
     }
   }
 
-  obstacles.push_back({model::command::position{ballPos.x(), ballPos.y(), 0.0}, 10.0});
   rrt_->obstacles(obstacles);
   rrt_->search(model::command::position{robot.x(), robot.y(), robotTheta},
                model::command::position{position.x(), position.y(), theta});
