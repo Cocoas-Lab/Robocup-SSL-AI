@@ -55,7 +55,7 @@ model::command getBall::execute() {
 
     // 移動目標
     {
-      const auto ratio = radius / ((target - ballPos).norm() + radius);
+      const auto ratio = (target - ballPos).norm()  == 0 ? 0 : radius / ((target - ballPos).norm() + radius);
       position         = (-ratio * target + 1 * ballPos) / (1 - ratio);
     }
 
