@@ -50,7 +50,41 @@ model::command getBall::execute() {
           util::math::wrapToPi(std::atan2(target.y() - robot.y(), target.x() - robot.x()));
       // ± 6[deg]以内に目標位置が存在する場合
       if (std::abs(theta - robotTheta) < pi<double>() / 30) {
-      }
+				command.dribble(0);
+				radius = 70;
+
+				// 敵の判定
+				{
+					constexpr auto radius = 1000;
+					const auto tmp = (robot - target).norm() / radius;
+					const auto ratio = 1 - tmp;
+
+					decltype(robot) pos = (-ratio * robot + target) / tmp;
+					constexpr auto margin = 200.0;
+					const auto shiftP = util::math::calcIsoscelesVertexes(pos, robot, margin);
+					polygon poly;
+					bg::exterior_ring(poly) = boost::assign::list_of<point>(pos.x(), pos.y())(
+									std::get<0>(shiftP).x(), std::get<0>(shiftP).y())(
+									std::get<1>(shiftP).x(), std::get<1>(shiftP).y())(pos.x(), pos.y());
+					bool enemy = false;
+					//自分から1000の位置と自分で三角形を作り,間に敵が1つでもあったらチップにする
+					for (auto it : enemyRobots) {
+							const point p((it.second).x(), (it.second).y());
+							if (!bg::disjoint(p, poly)) {
+									enemy = true;
+									break;
+							}
+					}
+					if(enemy){
+						command.kick({model::command::kickType::Tip, 1});
+					}else{
+						command.kick({model::command::kickType::Straight, 1});
+					}
+				}
+      }else{
+				command.kick({model::command::kickType::None, 0});
+				command.dribble(0);
+			}
     }
 
     // 移動目標
