@@ -35,7 +35,7 @@ model::command getBall::execute() {
   const auto friendRobots = isYellow_ ? world_.robotsYellow() : world_.robotsBlue();
   const auto enemyRobots  = isYellow_ ? world_.robotsBlue() : world_.robotsYellow();
   const auto robot        = util::math::position(friendRobots.at(id_));
-  const auto robotTheta   = friendRobots.at(id_).theta();
+  const auto robotTheta   = util::math::wrapToPi(friendRobots.at(id_).theta());
 
   // 扱いやすいように目標位置をベクトル形式に
   const auto target = util::math::position(target_);
