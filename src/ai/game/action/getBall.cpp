@@ -198,6 +198,33 @@ model::command getBall::execute() {
       theta =
           util::math::wrapToPi(std::atan2(ballPos.y() - robot.y(), ballPos.x() - robot.x()));
     }
+
+    //目標位置が外側に行ったらいい感じにする
+    //出たラインとの交点に移動
+    if (std::abs(position.y()) > field.yMax()) {
+      {
+        const auto A = (position.y() - ballPos.y()) / (position.x() - ballPos.x());
+        const auto B = ballPos.y() - A * ballPos.x();
+        if (std::signbit(position.y()) == std::signbit(field.yMin())) {
+          position.y() = field.yMin();
+        } else {
+          position.y() = field.yMax();
+        }
+        position.x() = (position.y() - B) / A;
+      }
+    } else if (std::abs(position.x()) > field.xMax()) {
+      {
+        const auto A = (position.y() - ballPos.y()) / (position.x() - ballPos.x());
+        const auto B = ballPos.y() - A * ballPos.x();
+        if (std::signbit(position.x()) == std::signbit(field.xMin())) {
+          position.x() = field.xMin();
+        } else {
+          position.x() = field.xMax();
+        }
+        position.y() = A * position.x() + B;
+      }
+    }
+
     std::vector<planner::rrt::obstacle> obstacles{};
     obstacles.reserve(enemyRobots.size() + friendRobots.size());
     for (auto&& [iy, rs] : {std::forward_as_tuple(false, enemyRobots),
