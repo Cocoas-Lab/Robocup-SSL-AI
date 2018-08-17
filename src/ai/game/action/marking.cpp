@@ -47,24 +47,32 @@ model::command marking::execute() {
   const Eigen::Vector2d my{myRobot.x(), myRobot.y()};
   const Eigen::Vector2d ball{world_.ball().x(), world_.ball().y()};
   const Eigen::Vector2d goal{world_.field().xMin(), 0.0};
-  Eigen::Vector2d tmpPos{0.0, 0.0};
   Eigen::Vector2d position{0.0, 0.0};
   auto ratio        = 0.0; //敵位置とボールの比
   auto tmp          = 0.0;
   const auto radius = 250;
-
+  auto theta        = 0.0;
   switch (mode_) {
     case PassCut:
       tmp      = (enemy - ball).norm() / radius; //敵位置 - 自位置の比
       ratio    = 1 - tmp;
       position = (-ratio * enemy + ball) / tmp;
-      tmpPos   = ball;
+      theta =
+          util::math::wrapTo2pi(std::atan2(position.y() - ball.y(), position.x() - ball.x()) +
+                                pi<double>()); // ロボットの向きはボール方面
+      break;
+    case ShootBlock:
+      const auto length = (goal - enemy).norm(); //敵機とゴールの距離
+      tmp               = std::signbit(1500 - length / 2)
+                ? 0
+                : 1500 - length / 2; //敵機-ゴール中央の中間地点とゴールラインの差
+      ratio    = (length / 2 + tmp) / length;
+      position = (1 - ratio) * goal + ratio * enemy;
+      theta =
+          util::math::wrapTo2pi(std::atan2(position.y() - enemy.y(), position.x() - enemy.x()) +
+                                pi<double>()); // ロボットの向きはボール方
       break;
   }
-
-  //向きをボールの方へ
-  const auto theta = util::math::wrapTo2pi(
-      std::atan2(position.y() - ball.y(), position.x() - ball.x()) + pi<double>());
 
   //目標位置が外側に行ったらその場で停止
   if (std::abs(position.x()) > world_.field().xMax() ||
