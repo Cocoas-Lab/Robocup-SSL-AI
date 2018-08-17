@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <cmath>
 #include <tuple>
-#include "ai/util/math.hpp"
+#include "ai/util/math/angle.hpp"
 
 namespace ai {
 namespace util {
@@ -27,13 +27,13 @@ std::tuple<Eigen::Matrix<T, 2, 1>, Eigen::Matrix<T, 2, 1>> calcIsoscelesVertexes
   Eigen::Matrix<T, 2, 1> afterMiddleBase{_middleBase - move};
 
   // x軸から角度
-  const auto alpha = util::wrapTo2pi(
+  const auto alpha = wrapTo2pi(
       std::atan2(afterMiddleBase.y() - afterApex.y(), afterMiddleBase.x() - afterApex.x()));
   //回転行列
   const Eigen::Rotation2D<T> rotate(alpha);
 
-  after_middle_base.x() = (afterMiddleBase - afterApex).norm();
-  after_middle_base.y() = 0.0;
+  afterMiddleBase.x() = (afterMiddleBase - afterApex).norm();
+  afterMiddleBase.y() = 0.0;
 
   //移動した先での仮の座標
   const Eigen::Matrix<T, 2, 1> tmp1(afterMiddleBase.x(), _shift);
