@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "ai/util/time.hpp"
+#include "ai/util/enumStr.hpp"
 #include "teamInfo.hpp"
 
 #include "ssl-protos/refbox/referee.pb.h"
@@ -60,6 +61,8 @@ public:
   teamInfo teamYellow() const;
   teamInfo teamBlue() const;
   std::tuple<double, double> ballPlacementPosition() const;
+  std::string stageStr() const;
+  std::string commandStr() const;
 
   void packetTimestamp(util::TimePointType _timePoint);
   void stageTimeLeft(uint32_t _timeLeft);
@@ -77,6 +80,8 @@ private:
   teamInfo teamYellow_;
   teamInfo teamBlue_;
   std::tuple<double, double> ballPlacementPosition_;
+  util::enumStr<stageName> stageStr_;
+  util::enumStr<gameCommand> commandStr_;
 };
 } // namespace model
 } // namespace ai

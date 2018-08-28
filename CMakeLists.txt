@@ -22,6 +22,7 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS}         -Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   -g -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -march=native -DNDEBUG")
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS}  -Wl,-O1,--sort-common,--as-needed,-z,relro")
 
 if(CMAKE_GENERATOR STREQUAL "Ninja")
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -52,8 +53,17 @@ find_package(Boost 1.61.0 COMPONENTS coroutine system unit_test_framework REQUIR
 find_package(Eigen3 3.3 REQUIRED)
 find_package(Protobuf 3.2 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Gtkmm3 gtkmm-3.0)
 
 enable_testing()
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/src
+  ${Boost_INCLUDE_DIRS}
+  ${Gtkmm3_INCLUDE_DIRS}
+  ${Protobuf_INCLUDE_DIRS}
+)
 
 add_subdirectory(3rd)
 add_subdirectory(src)
