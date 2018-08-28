@@ -6,6 +6,40 @@ refbox::refbox() : teamYellow_("yellow"), teamBlue_("blue"), ballPlacementPositi
   stageTimeLeft_ = 0;
   stage_         = stageName::NormalFirstHalfPre;
   command_       = gameCommand::Halt;
+
+  stageStr_.addKeys({{stageName::NormalFirstHalfPre, "NormalFirstHalfPre"},
+                     {stageName::NormalFirstHalf, "NormalFirstHalf"},
+                     {stageName::NormalHalfTime, "NormalHalfTime"},
+                     {stageName::NormalSecondHalfPre, "NormalSecondHalfPre"},
+                     {stageName::NormalSecondHalf, "NormalSecondHalf"},
+                     {stageName::ExtraTimeBreak, "ExtraTimeBreak"},
+                     {stageName::ExtraFirstHalfPre, "ExtraFirstHalfPre"},
+                     {stageName::ExtraFirstHalf, "ExtraFirstHalf"},
+                     {stageName::ExtraHalfTime, "ExtraHalfTime"},
+                     {stageName::ExtraSecondHalfPre, "ExtraSecondHalfPre"},
+                     {stageName::ExtraSecondHalf, "ExtraSecondHalf"},
+                     {stageName::PenaltyShootoutBreak, "PenaltyShootoutBreak"},
+                     {stageName::PenaltyShootout, "PenaltyShootout"},
+                     {stageName::PostGame, "PostGame"}});
+
+  commandStr_.addKeys({{gameCommand::Halt, "Halt"},
+                       {gameCommand::Stop, "Stop"},
+                       {gameCommand::NormalStart, "NormalStart"},
+                       {gameCommand::ForceStart, "ForceStart"},
+                       {gameCommand::PrepareKickoffYellow, "PrepareKickoffYellow"},
+                       {gameCommand::PrepareKickoffBlue, "PrepareKickoffBlue"},
+                       {gameCommand::PreparePenaltyYellow, "PreparePenaltyYellow"},
+                       {gameCommand::PreparePenaltyBlue, "PreparePenaltyBlue"},
+                       {gameCommand::DirectFreeYellow, "DirectFreeYellow"},
+                       {gameCommand::DirectFreeBlue, "DirectFreeBlue"},
+                       {gameCommand::IndirectFreeYellow, "IndirectFreeYellow"},
+                       {gameCommand::IndirectFreeBlue, "IndirectFreeBlue"},
+                       {gameCommand::TimeoutYellow, "TimeoutYellow"},
+                       {gameCommand::TimeoutBlue, "TimeoutBlue"},
+                       {gameCommand::GoalYellow, "GoalYellow"},
+                       {gameCommand::GoalBlue, "GoalBlue"},
+                       {gameCommand::BallPlacementYellow, "BallPlacementYellow"},
+                       {gameCommand::BallPlacementBlue, "BallPlacementBlue"}});
 }
 
 util::TimePointType refbox::packetTimestamp() const {
@@ -34,6 +68,14 @@ teamInfo refbox::teamBlue() const {
 
 std::tuple<double, double> refbox::ballPlacementPosition() const {
   return ballPlacementPosition_;
+}
+
+std::string refbox::stageStr() const {
+  return stageStr_(stage_);
+}
+
+std::string refbox::commandStr() const {
+  return commandStr_(command_);
 }
 
 void refbox::packetTimestamp(util::TimePointType _timePoint) {
