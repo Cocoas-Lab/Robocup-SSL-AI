@@ -255,8 +255,9 @@ private:
 // --------------------------------
 class gameWindow final : public Gtk::Window {
 public:
-  gameWindow(model::updater::world& _world, gameRunner& _runner)
-      : updaterWorld_(_world), runner_(_runner) {
+  gameWindow(model::updater::world& _world, model::updater::refbox& _refbox,
+             gameRunner& _runner)
+      : updaterWorld_(_world), updaterRefbox_(_refbox), runner_(_runner) {
     set_border_width(10);
     set_default_size(800, 500);
     set_title("AI Client");
@@ -349,6 +350,12 @@ public:
 
     initRadioButtons();
     initCheckButtons();
+
+    dispatcher.connect(sigc::mem_fun(*this, &gameWindow::handleCommandChanged));
+  }
+
+  void gameCommandChanged() {
+    dispatcher.emit();
   }
 
   void ready() {
@@ -439,6 +446,10 @@ private:
     }
   }
 
+  void handleCommandChanged() {
+    textBuffer_->set_text(updaterRefbox_.value().commandStr());
+  }
+
   void handleStartStop() {
     if (start_.get_label() == "start") {
       runner_.start();
@@ -494,9 +505,12 @@ private:
   Gtk::Button apply_, start_;
   Gtk::TreeView tree_;
   Glib::RefPtr<Gtk::TreeStore> treestore_;
-	Gtk::TextView stateText_;
+  Glib::RefPtr<Gtk::TextBuffer> textBuffer_;
+  Glib::Dispatcher dispatcher;
+  Gtk::TextView stateText_;
 
   model::updater::world& updaterWorld_;
+  model::updater::refbox& updaterRefbox_;
   gameRunner& runner_;
 };
 
@@ -564,7 +578,10 @@ auto main(int argc, char** argv) -> int {
 
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
     gameRunner runner{updaterWorld, updaterRefbox, sender};
-    gameWindow gw{updaterWorld, runner};
+    gameWindow gw{updaterWorld, updaterRefbox, runner};
+
+    refboxReceiver.onReceive([&updaterRefbox, &gw](auto&& p) { gw.gameCommandChanged(); });
+
     gw.show();
 
     std::thread wait([&runner, &gw, &visionReceived] {
