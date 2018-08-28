@@ -150,7 +150,7 @@ public:
       ss << "} -> { ";
       std::copy(_ids.cbegin(), _ids.cend(), std::ostream_iterator<uint32_t>(ss, ", "));
       ss << "}";
-                        std::cout << ss.str() << std::endl;
+      std::cout << ss.str() << std::endl;
 
       activeRobots_ = _ids;
     }
@@ -185,7 +185,7 @@ public:
 
 private:
   void mainLoop() {
-    std::cout << "game start!!"<< std::endl;
+    std::cout << "game start!!" << std::endl;
     ai::util::TimePointType prevTime{};
 
     while (running_) {
@@ -196,8 +196,8 @@ private:
         } else {
           std::unique_lock<std::shared_timed_mutex> lock(mutex_);
           const auto prevCmd = refbox_.command();
-          world_              = updaterWorld_.value();
-          refbox_             = updaterRefbox_.value();
+          world_             = updaterWorld_.value();
+          refbox_            = updaterRefbox_.value();
 
           const auto currentCmd  = refbox_.command();
           const auto penaltyKick = teamColor_ == model::teamColor::Yellow
@@ -332,16 +332,16 @@ public:
 
     {
       // right widgets
-			state_.set_label("Game State");
-			auto textArea = stateText_.get_buffer();
-			textArea->set_text( "Stop Game" );
-			stateText_.set_editable(false);
-			stateBox_.set_border_width(4);
-			stateBox_.pack_start(stateText_);
-			state_.add(stateBox_);
-			right_.pack_start(state_,  Gtk::PACK_SHRINK, 4);
+      state_.set_label("Game State");
+      textBuffer_ = stateText_.get_buffer();
+      textBuffer_->set_text(updaterRefbox_.value().commandStr());
+      stateText_.set_editable(false);
+      stateBox_.set_border_width(4);
+      stateBox_.pack_start(stateText_);
+      state_.add(stateBox_);
+      right_.pack_start(state_, Gtk::PACK_SHRINK, 4);
       initTree();
-			right_.pack_start(tree_, Gtk::PACK_EXPAND_WIDGET, 10);
+      right_.pack_start(tree_, Gtk::PACK_EXPAND_WIDGET, 10);
       center_.pack_end(right_, Gtk::PACK_EXPAND_WIDGET, 10);
     }
 
@@ -368,30 +368,30 @@ private:
     tree_.set_model(treestore_);
     tree_.append_column_editable("Agent/Action", model_.name_);
     tree_.append_column("Robot ID", model_.id_);
-		tree_.append_column("Battery[V]", model_.battery_);
-		tree_.append_column("Kicker[V]", model_.kicker_);
-		tree_.append_column("Ball Sensor", model_.ballSensor_);
+    tree_.append_column("Battery[V]", model_.battery_);
+    tree_.append_column("Kicker[V]", model_.kicker_);
+    tree_.append_column("Ball Sensor", model_.ballSensor_);
 
-    auto r1_1          = *(treestore_->append());
-    r1_1[model_.name_] = "no_op";
-    r1_1[model_.id_]   = 0;
-		r1_1[model_.battery_] = 22.2;
-		r1_1[model_.kicker_] = 200;
-		r1_1[model_.ballSensor_] = "Inactive";
-    auto r1_2          = *(treestore_->append());
-    r1_2[model_.name_] = "no_op";
-    r1_2[model_.id_]   = 1;
-		r1_2[model_.battery_] = 22.2;
-		r1_2[model_.kicker_] = 200;
-		r1_2[model_.ballSensor_] = "Inactive";
-    auto r1_3          = *(treestore_->append());
-    r1_3[model_.name_] = "no_op";
-    r1_3[model_.id_]   = 2;
-		r1_3[model_.battery_] = 22.2;
-		r1_3[model_.kicker_] = 200;
+    auto r1_1                = *(treestore_->append());
+    r1_1[model_.name_]       = "no_op";
+    r1_1[model_.id_]         = 0;
+    r1_1[model_.battery_]    = 22.2;
+    r1_1[model_.kicker_]     = 200;
+    r1_1[model_.ballSensor_] = "Inactive";
+    auto r1_2                = *(treestore_->append());
+    r1_2[model_.name_]       = "no_op";
+    r1_2[model_.id_]         = 1;
+    r1_2[model_.battery_]    = 22.2;
+    r1_2[model_.kicker_]     = 200;
+    r1_2[model_.ballSensor_] = "Inactive";
+    auto r1_3                = *(treestore_->append());
+    r1_3[model_.name_]       = "no_op";
+    r1_3[model_.id_]         = 2;
+    r1_3[model_.battery_]    = 22.2;
+    r1_3[model_.kicker_]     = 200;
     r1_3[model_.ballSensor_] = "Inactive";
-    
-		tree_.expand_all();
+
+    tree_.expand_all();
   }
 
   void initRadioButtons() {
@@ -462,8 +462,6 @@ private:
 
   void handleActiveRobotsChanged() {
     apply_.set_sensitive(true);
-
-		
   }
 
   void handleChangeActiveRobots() {
@@ -482,16 +480,16 @@ private:
     treeModel() {
       add(name_);
       add(id_);
-			add(battery_);
-			add(kicker_);
-			add(ballSensor_);
+      add(battery_);
+      add(kicker_);
+      add(ballSensor_);
     }
 
     Gtk::TreeModelColumn<Glib::ustring> name_;
     Gtk::TreeModelColumn<uint32_t> id_;
-		Gtk::TreeModelColumn<double> battery_;
-		Gtk::TreeModelColumn<uint32_t> kicker_;
-		Gtk::TreeModelColumn<std::string> ballSensor_;
+    Gtk::TreeModelColumn<double> battery_;
+    Gtk::TreeModelColumn<uint32_t> kicker_;
+    Gtk::TreeModelColumn<std::string> ballSensor_;
   };
 
   treeModel model_;
@@ -558,8 +556,8 @@ auto main(int argc, char** argv) -> int {
       updaterRefbox.update(std::forward<decltype(p)>(p));
     });
 
-		// Receiver, Driverなどをぶんまわすスレッド
-		std::thread ioThread{};
+    // Receiver, Driverなどをぶんまわすスレッド
+    std::thread ioThread{};
 
     // receiver_ioに登録されたタスクを別スレッドで開始
     ioThread = std::thread{[&receiverIo] {
@@ -597,7 +595,7 @@ auto main(int argc, char** argv) -> int {
 
     app->run(gw);
 
-		wait.detach();
+    wait.detach();
     receiverIo.stop();
     ioThread.join();
   } catch (std::exception& e) {
